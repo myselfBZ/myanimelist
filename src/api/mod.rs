@@ -1,13 +1,9 @@
 pub mod anime;
+pub mod media;
 pub mod anime_genres;
 pub mod extractor;
 pub mod openapi;
-use aide::{
-    OperationIo,
-    axum::{IntoApiResponse, routing::get},
-    openapi::OpenApi,
-    swagger::Swagger,
-};
+use aide::{ OperationIo, axum::{IntoApiResponse, routing::{get}}, openapi::OpenApi, swagger::Swagger, };
 use axum::{Extension, Json, Router, http::StatusCode, response::IntoResponse};
 use schemars::JsonSchema;
 use sea_orm::DbErr;
@@ -27,6 +23,7 @@ pub async fn create_app(state: State) -> anyhow::Result<Router> {
         .route("/", get(dummy))
         .nest("/animes", anime::router(state.clone()))
         .nest("/anime-genres", anime_genres::router(state.clone()))
+        .nest("/upload-media", media::router(state.clone()))
         .route("/api.json", get(serve_docs))
         .route(
             "/swagger",
